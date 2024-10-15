@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #ff5e3a;
+            padding: 20px;
+            color: white;
+            position: fixed;
+            height: 100%;
+        }
+        .sidebar a {
+            display: block;
+            color: white;
+            padding: 10px;
+            text-decoration: none;
+            margin: 5px 0;
+        }
+        .sidebar a:hover {
+            background-color: #e55330;
+        }
+        .content {
+            margin-left: 270px;
+            padding: 20px;
+        }
+        .header {
+            background-color: #ff5e3a;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .product-list {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .product-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .product-card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 10px;
+            padding: 10px;
+            width: calc(25% - 20px);
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .product-card img {
+            max-width: 100%;
+            height: auto;
+        }
+        .product-card h3 {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        .product-card p {
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        .buy-button {
+            background-color: #ff5e3a;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .buy-button:hover {
+            background-color: #e55330;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2><?php echo $userType === 'ADMINISTRATOR' ? 'Admin Dashboard' : 'User Dashboard'; ?></h2>
+    <?php if ($userType === 'ADMINISTRATOR'): ?>
+        <a href="dashboard.php">Dashboard</a>
+        <a href="manageproducts.php">Manage Products</a>
+        <a href="#">Orders</a>
+        <a href="#">Customers</a>
+    <?php elseif ($userType === 'USER'): ?>
+        <a href="viewproducts.php">View Products</a>
+        <a href="#">Orders</a>
+    <?php endif; ?>
+    <a href="logout.php">Logout</a>
+</div>
+
+<div class="content">
+    <div class="header">
+        <h1>Welcome to the Dashboard</h1>
+        <p>Email: <?php echo $_SESSION['email']; ?></p>
+    </div>
+
+    <?php if ($userType === 'ADMINISTRATOR'): ?>
+        <div class="form-container">
+            <h2>Add New Product</h2>
+            <?php if (!empty($message)) echo "<p>$message</p>"; ?>
+            <form action="dashboard.php" method="post" enctype="multipart/form-data">
+                <label for="product_id">Product ID:</label>
+                <input type="number" id="product_id" name="product_id" required><br><br>
+                <label for="product_name">Product Name:</label>
+                <input type="text" id="product_name" name="product_name" required><br><br>
+                <label for="product_price">Product Price:</label>
+                <input type="text" id="product_price" name="product_price" required><br><br>
+                <label for="product_description">Product Description:</label>
+                <textarea id="product_description" name="product_description" required></textarea><br><br>
+                <label for="product_image">Product Image:</label>
+                <input type="file" id="product_image" name="product_image" required><br><br>
+                <input type="submit" name="add_product" value="Add Product">
+            </form>
+        </div>
+    <?php endif; ?>
+
+    <div class="product-list">
+        <h2>Available Products</h2>
+        <div class="product-container">
+            <?php foreach ($products as $product): ?>
+                <div class="product-card">
+                    <img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>">
+                    <h3><?php echo $product['name']; ?></h3>
+                    <p>Price: $<?php echo number_format($product['price'], 2); ?></p>
+                    <p><?php echo $product['description']; ?></p>
+                    <?php if ($userType === 'USER'): ?>
+                        <button class="buy-button">Buy Now</button>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
